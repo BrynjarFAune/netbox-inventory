@@ -11,6 +11,9 @@ __all__ = (
     "DeliveryFilter",
     "InventoryItemTypeFilter",
     "InventoryItemGroupFilter",
+    "AccountFilter",
+    "DepartemtnFilter",
+    "InvoiceFilter"
 )
 
 
@@ -47,4 +50,19 @@ class InventoryItemTypeFilter(BaseFilterMixin):
 @strawberry_django.filter(models.InventoryItemGroup, lookups=True)
 @autotype_decorator(filtersets.InventoryItemGroupFilterSet)
 class InventoryItemGroupFilter(BaseFilterMixin):
+    pass
+
+@strawberry_django.filter(models.Account, lookups=True)
+@autotype_decorator(filtersets.AccountFilterSet)
+class AccountFilter(BaseFilterMixin):
+    pass
+
+@strawberry_django.filter(models.Department, lookups=True)
+@autotype_decorator(filtersets.DepartmentFilterSet)
+class DepartmentFilter(BaseFilterMixin):
+    pass
+
+@strawberry_django.filter(models.Invoice, lookups=True)
+@autotype_decorator(filtersets.InvoiceFilterSet)
+class InvoiceFilter(BaseFilterMixin):
     pass

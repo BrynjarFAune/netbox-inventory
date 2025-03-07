@@ -9,7 +9,7 @@ from utilities import filters
 from tenancy.filtersets import ContactModelFilterSet
 from tenancy.models import Contact, ContactGroup, Tenant
 from .choices import HardwareKindChoices, AssetStatusChoices, PurchaseStatusChoices
-from .models import Asset, Delivery, InventoryItemType, InventoryItemGroup, Purchase, Supplier
+from .models import Asset, Delivery, InventoryItemType, InventoryItemGroup, Purchase, Supplier, Invoice, Department, Account
 from .utils import query_located, get_asset_custom_fields_search_filters
 
 
@@ -568,5 +568,42 @@ class DeliveryFilterSet(NetBoxModelFilterSet):
             Q(purchase__name__icontains=value) |
             Q(purchase__supplier__name__icontains=value) |
             Q(receiving_contact__name__icontains=value)
+        )
+        return queryset.filter(query)
+
+class InvoiceFilterSet(NetBoxModelFilterSet):
+    class Meta:
+        model = Invoice
+        fields = ('id', 'invoice_id', 'account', 'department')
+
+    def search(self, queryset, name, value):
+        query = Q(
+            Q(invoice_id__icontains=value) |
+            Q(account__icontains=value) |
+            Q(department__icontains=value)
+        )
+        return queryset.filter(query)
+
+class DepartmentFilterSet(NetBoxModelFilterSet):
+    class Meta:
+        model = Department
+        fields = ('id', 'department_id', 'name')
+
+    def search(self, queryset, name, value):
+        query = Q(
+            Q(department_id__icontains=value) |
+            Q(name__icontains=value)
+        )
+        return queryset.filter(query)
+
+class AccountFilterSet(NetBoxModelFilterSet):
+    class Meta:
+        model = Account
+        fields = ('id', 'name', 'number')
+
+    def search(self, queryset, name, value):
+        query = Q(
+            Q(name__icontains=value) |
+            Q(number__icontains=value)
         )
         return queryset.filter(query)

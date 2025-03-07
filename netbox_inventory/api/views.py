@@ -4,7 +4,7 @@ from utilities.query import count_related
 from .. import filtersets, models
 from .serializers import (
     AssetSerializer, InventoryItemTypeSerializer, InventoryItemGroupSerializer,
-    DeliverySerializer, PurchaseSerializer, SupplierSerializer
+    DeliverySerializer, PurchaseSerializer, SupplierSerializer, InvoiceSerializer, AccountSerializer, DepartmentSerializer
 )
 
 
@@ -91,3 +91,26 @@ class DeliveryViewSet(NetBoxModelViewSet):
     )
     serializer_class = DeliverySerializer
     filterset_class = filtersets.DeliveryFilterSet
+
+#
+# Invoices
+#
+
+class DepartmentViewSet(NetBoxModelViewSet):
+    queryset = models.Department.objects.prefetch_related('tags').annotate(
+        invoice_count=count_related(models.Invoice, 'department')
+    )
+    serializer_class = DepartmentSerializer
+    filterset_class = filtersets.DepartmentFilterSet
+
+class AccountViewSet(NetBoxModelViewSet):
+    queryset = models.Account.objects.prefetch_related('tags').annotate(
+        invoice_count=count_related(models.Invoice, 'account')
+    )
+    serializer_class = AccountSerializer
+    filterset_class = filtersets.AccountFilterSet
+
+class InvoiceViewSet(NetBoxModelViewSet):
+    queryset = models.Invoice.objects.prefetch_related('tags')
+    serializer_class = InvoiceSerializer
+    filterset_class = filtersets.InvoiceFilterSet

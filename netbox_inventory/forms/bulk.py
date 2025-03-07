@@ -12,8 +12,8 @@ from utilities.forms.fields import (
 from utilities.forms.rendering import FieldSet
 from utilities.forms.widgets import DatePicker
 from tenancy.models import Contact, ContactGroup, Tenant
-from ..choices import AssetStatusChoices, HardwareKindChoices, PurchaseStatusChoices
-from ..models import Asset, Delivery, InventoryItemType, InventoryItemGroup, Purchase, Supplier
+from ..choices import AssetStatusChoices, HardwareKindChoices, PurchaseStatusChoices, CurrencyChoices
+from ..models import Asset, Delivery, InventoryItemType, InventoryItemGroup, Purchase, Supplier, Invoice, Account, Department
 from ..utils import get_plugin_setting
 
 __all__ = (
@@ -29,6 +29,10 @@ __all__ = (
     'InventoryItemTypeBulkEditForm',
     'InventoryItemGroupImportForm',
     'InventoryItemGroupBulkEditForm',
+    'InvoiceBulkEditForm',
+    'InvoiceImportForm',
+    'DepartmentImportForm',
+    'AccountImportForm'
 )
 
 
@@ -650,3 +654,65 @@ class InventoryItemGroupBulkEditForm(NetBoxModelBulkEditForm):
         FieldSet('parent'),
     )
     nullable_fields = ('parent',)
+
+
+class InvoiceImportForm(NetBoxModelImportForm):
+    department = CSVModelChoiceField(
+        queryset=Department.objects.all(),
+        to_field_name='department_id',
+    )
+    account = CSVModelChoiceField(
+        queryset=Account.objects.all(),
+        to_field_name='number'
+    )
+    currency = forms.ChoiceField(
+        choices=CurrencyChoices.CHOICES,
+        required=False,
+        initial='nok'
+    )
+    purchase = CSVModelChoiceField(
+        queryset=Purchase.objects.all(),
+        required=False
+    )
+    class Meta:
+        model = Invoice
+        fields = [
+            'invoice_id', 'department', 'account', 'amount', 'currency', 'amount', 'nok_value', 'approval_date', 'comments', 'defined_period', 'period'
+        ]
+    def clean_currency(self):
+        data = self.cleaned_data.get('currency')
+        if not data:
+            return 'nok'
+        return data
+
+
+
+class InvoiceBulkEditForm(NetBoxModelBulkEditForm):
+    currency = forms.ChoiceField(
+        required=False,
+        choices=CurrencyChoices.CHOICES
+    )
+    account = forms.ModelChoiceField(
+        queryset=Account.objects.all(),
+        required=False
+    )
+    department = forms.ModelChoiceField(
+        queryset=Department.objects.all(),
+        required=False
+    )
+
+    model = Invoice
+    fieldsets = (
+        FieldSet('approval_date', 'currency', 'department', 'account', name='General'),
+    )
+
+
+class AccountImportForm(NetBoxModelImportForm):
+    class Meta:
+        model = Account
+        fields = ['name', 'number', 'comments']
+
+class DepartmentImportForm(NetBoxModelImportForm):
+    class Meta:
+        model = Department
+        fields = ['name', 'department_id']

@@ -13,6 +13,9 @@ from netbox_inventory.models import (
     Delivery,
     InventoryItemType,
     InventoryItemGroup,
+    Account,
+    Department,
+    Invoice
 )
 from .filters import (
     AssetFilter,
@@ -21,6 +24,9 @@ from .filters import (
     DeliveryFilter,
     InventoryItemTypeFilter,
     InventoryItemGroupFilter,
+    AccountFilter,
+    DepartmentFilter,
+    InvoiceFilter,
 )
 
 
@@ -129,3 +135,33 @@ class InventoryItemGroupType(OrganizationalObjectType):
             "InventoryItemGroupType", strawberry.lazy("netbox_inventory.graphql.types")
         ]
     ]
+
+
+@strawberry_django.type(Department, fields="__all__", filters=DepartmentFilter)
+class DepartmentType(NetBoxObjectType):
+    invoices: list[
+        Annotated["InvoiceType", strawberry.lazy("netbox_inventory.graphql.types")]
+    ]
+
+
+
+@strawberry_django.type(Account, fields="__all__", filters=AccountFilter)
+class AccountType(NetBoxObjectType):
+    invoices: list[
+        Annotated["InvoiceType", strawberry.lazy("netbox_inventory.graphql.types")]
+    ]
+
+
+@strawberry_django.type(Invoice, fields="__all__", filters=InvoiceFilter)
+class InvoiceType(NetBoxObjectType):
+    account: Annotated[
+        "AccountType", strawberry.lazy("netbox_inventory.graphql.types")
+    ]
+    department: list[
+        Annotated["DepartmentType", strawberry.lazy("netbox_inventory.graphql.types")]
+    ]
+    purchase: list[
+        Annotated["PurchaseType", strawberry.lazy("netbox_inventory.graphql.types")] | None
+    ]
+
+

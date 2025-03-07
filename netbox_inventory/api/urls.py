@@ -19,4 +19,9 @@ router.register('suppliers', views.SupplierViewSet)
 router.register('purchases', views.PurchaseViewSet)
 router.register('deliveries', views.DeliveryViewSet)
 
+# Invoices
+router.register('accounts', views.AccountViewSet)
+router.register('departments', views.DepartmentViewSet)
+router.register('invoices', views.InvoiceViewSet)
+
 urlpatterns = router.urls

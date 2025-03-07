@@ -3,7 +3,7 @@ from rest_framework import serializers
 from tenancy.api.serializers import ContactSerializer
 from netbox.api.serializers import NetBoxModelSerializer
 from .nested import *
-from netbox_inventory.models import Delivery, Purchase, Supplier
+from netbox_inventory.models import Delivery, Purchase, Supplier, Invoice
 
 
 class SupplierSerializer(NetBoxModelSerializer):
@@ -31,15 +31,20 @@ class PurchaseSerializer(NetBoxModelSerializer):
     supplier = SupplierSerializer(nested=True)
     asset_count = serializers.IntegerField(read_only=True)
     delivery_count = serializers.IntegerField(read_only=True)
+    invoice = serializers.PrimaryKeyRelatedField(
+        queryset=Invoice.objects.all(),
+        required=False,
+        allow_null=True
+    )
 
     class Meta:
         model = Purchase
         fields = (
             'id', 'url', 'display', 'supplier', 'name', 'status', 'date', 'description',
             'comments', 'tags', 'custom_fields', 'created', 'last_updated',
-            'asset_count', 'delivery_count',
+            'asset_count', 'delivery_count', 'invoice'
         )
-        brief_fields = ('id', 'url', 'display', 'supplier', 'name', 'status', 'date', 'description')
+        brief_fields = ('id', 'url', 'display', 'supplier', 'name', 'status', 'date', 'description', 'invoice')
 
 
 class DeliverySerializer(NetBoxModelSerializer):

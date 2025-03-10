@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 
 from netbox.tables import columns, NetBoxTable
 from tenancy.tables import ContactsColumnMixin
-from .models import Asset, Delivery, InventoryItemType, InventoryItemGroup, Purchase, Supplier
+from .models import Asset, Delivery, InventoryItemType, InventoryItemGroup, Purchase, Supplier, Account, Department, Invoice
 from .template_content import WARRANTY_PROGRESSBAR
 
 from dcim.tables import DeviceTypeTable, ModuleTypeTable, RackTypeTable
@@ -17,6 +17,9 @@ __all__ = (
     'DeliveryTable',
     'InventoryItemTypeTable',
     'InventoryItemGroupTable',
+    'AccountTable',
+    'DepartmentTable',
+    'InvoiceTable'
 )
 
 
@@ -529,6 +532,50 @@ class DeliveryTable(NetBoxTable):
             'date',
             'asset_count',
         )
+
+#
+# Invoices
+#
+
+class InvoiceTable(NetBoxTable):
+    invoice_id = tables.Column(
+        linkify=True
+    )
+
+    class Meta(NetBoxTable.Meta):
+        model = Invoice
+        fields = ('pk', 'id', 'invoice_id', 'approval_date', 'department', 'account', 'purchase', 'amount', 'nok_value', 'currency', 'comments', 'defined_period', 'period', 'actions')
+        default_columns = ('invoice_id', 'department', 'account', 'purchase', 'amount', 'currency')
+
+class DepartmentTable(NetBoxTable):
+    name = tables.Column(
+        linkify=True
+    )
+    invoice_count = columns.LinkedCountColumn(
+        viewname='plugins:netbox_inventory:invoice_list',
+        url_params={'supplier_id': 'pk'},
+        verbose_name='invoices',
+    )
+
+    class Meta(NetBoxTable.Meta):
+        model = Department
+        fields = ('pk', 'id', 'name', 'department_id', 'invoice_count', 'actions')
+        default_columns = ('name', 'department_id', 'invoice_count')
+
+class AccountTable(NetBoxTable):
+    name = tables.Column(
+        linkify=True
+    )
+    invoice_count = columns.LinkedCountColumn(
+        viewname='plugins:netbox_inventory:invoice_list',
+        url_params={'supplier_id': 'pk'},
+        verbose_name='invoices',
+    )
+
+    class Meta(NetBoxTable.Meta):
+        model = Account
+        fields = ('pk', 'id', 'name', 'number', 'invoice_count', 'comments', 'actions')
+        default_columns = ('name', 'number', 'invoice_count')
 
 
 # ========================

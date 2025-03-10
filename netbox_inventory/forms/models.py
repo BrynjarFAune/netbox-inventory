@@ -5,7 +5,7 @@ from utilities.forms.fields import CommentField, DynamicModelChoiceField, SlugFi
 from utilities.forms.rendering import FieldSet
 from utilities.forms.widgets import DatePicker
 from tenancy.models import Contact, ContactGroup, Tenant
-from ..models import Asset, Delivery, InventoryItemType, InventoryItemGroup, Purchase, Supplier
+from ..models import Asset, Delivery, InventoryItemType, InventoryItemGroup, Purchase, Supplier, Account, Department, Invoice
 from ..utils import get_tags_and_edit_protected_asset_fields
 
 __all__ = (
@@ -15,6 +15,9 @@ __all__ = (
     'DeliveryForm',
     'InventoryItemTypeForm',
     'InventoryItemGroupForm',
+    'InvoiceForm',
+    'AccountForm',
+    'DepartmentForm'
 )
 
 
@@ -224,9 +227,14 @@ class SupplierForm(NetBoxModelForm):
 
 class PurchaseForm(NetBoxModelForm):
     comments = CommentField()
+    invoice = DynamicModelChoiceField(
+        queryset=Invoice.objects.all(),
+        required=False,
+        help_text="Assign an invoice to this purchase."
+    )
 
     fieldsets = (
-        FieldSet('supplier', 'name', 'status', 'date', 'description', 'tags', name='Purchase'),
+        FieldSet('supplier', 'name', 'status', 'date', 'description', 'tags', 'invoice', name='Purchase'),
     )
 
     class Meta:
@@ -239,6 +247,7 @@ class PurchaseForm(NetBoxModelForm):
             'description',
             'comments',
             'tags',
+            'invoice',
         )
         widgets = {
             'date': DatePicker(),
@@ -324,3 +333,71 @@ class InventoryItemGroupForm(NetBoxModelForm):
             'tags',
             'comments',
         )
+
+
+
+class InvoiceForm(NetBoxModelForm):
+    comments = CommentField()
+    account = DynamicModelChoiceField(
+        queryset=Account.objects.all()
+    )
+    department = DynamicModelChoiceField(
+        queryset=Department.objects.all()
+    )
+    purchase = DynamicModelChoiceField(
+        queryset=Purchase.objects.all(),
+        required=False
+    )
+    fieldsets = (
+        FieldSet(
+            'invoice_id', 
+            'approval_date', 
+            'defined_period', 
+            'period', 
+            'tags',
+            name='General'
+        ),
+        FieldSet(
+            'currency', 
+            'amount', 
+            'nok_value', 
+            name='Finance'
+        ),
+        FieldSet(
+            'purchase', 
+            'account', 
+            'department', 
+            name='Related'
+        ),
+    )
+
+    class Meta:
+        model = Invoice
+        fields = (
+            'invoice_id', 
+            'currency', 
+            'amount', 
+            'nok_value', 
+            'account', 
+            'department', 
+            'purchase', 
+            'approval_date', 
+            'defined_period', 
+            'period', 
+            'comments', 
+            'tags',
+        )
+        widgets = {
+            'approval_date': DatePicker(),
+        }
+
+class AccountForm(NetBoxModelForm):
+    comments = CommentField()
+    class Meta:
+        model = Account
+        fields = ('name', 'number', 'comments', 'tags')
+
+class DepartmentForm(NetBoxModelForm):
+    class Meta:
+        model = Department
+        fields = ('name', 'department_id', 'tags')

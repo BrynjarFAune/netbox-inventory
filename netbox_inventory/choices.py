@@ -36,3 +36,17 @@ class PurchaseStatusChoices(ChoiceSet):
         ('partial', 'Partial', 'blue'),
         ('closed', 'Closed', 'green'),
     ]
+
+#
+# Invoices
+#
+
+class CurrencyChoices(ChoiceSet):
+    key = 'Invoice.currency'
+
+    CHOICES = [
+        ('nok', 'NOK'),
+        ('dkk', 'DKK'),
+        ('eur', 'EUR'),
+        ('usd', 'USD'),
+    ]

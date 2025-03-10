@@ -8,6 +8,9 @@ from netbox_inventory.models import (
     Delivery,
     InventoryItemType,
     InventoryItemGroup,
+    Account,
+    Department,
+    Invoice,
 )
 from .types import (
     AssetType,
@@ -16,6 +19,9 @@ from .types import (
     DeliveryType,
     InventoryItemTypeType,
     InventoryItemGroupType,
+    InvoiceType,
+    AccountType,
+    DepartmentType
 )
 
 
@@ -71,3 +77,30 @@ class InventoryItemGroupQuery:
         return InventoryItemGroup.objects.get(pk=id)
 
     inventory_item_group_list: list[InventoryItemGroupType] = strawberry_django.field()
+
+
+@strawberry.type
+class AccountQuery:
+    @strawberry.field
+    def account(self, id: int) -> AccountType:
+        return Account.objects.get(pk=id)
+
+    account_list: list[AccountType] = strawberry_django.field()
+
+
+@strawberry.type
+class DepartmentQuery:
+    @strawberry.field
+    def department(self, id: int) -> DepartmentType:
+        return department.objects.get(pk=id)
+
+    department_list: list[DepartmentType] = strawberry_django.field()
+
+
+@strawberry.type
+class InvoiceQuery:
+    @strawberry.field
+    def invoice(self, id: int) -> InvoiceType:
+        return Invoice.objects.get(pk=id)
+
+    invoice_list: list[InvoiceType] = strawberry_django.field()

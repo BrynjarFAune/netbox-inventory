@@ -142,6 +142,66 @@ deliveries_items = (
     ),
 )
 
+#
+# Invoices
+#
+
+account_buttons = [
+    PluginMenuButton(
+        link='plugins:netbox_inventory:account_add',
+        title='Add',
+        icon_class='mdi mdi-plus-thick',
+    ),
+    PluginMenuButton(
+        link='plugins:netbox_inventory:account_bulk_import',
+        title='Import',
+        icon_class='mdi mdi-upload',
+    )
+]
+department_buttons = [
+    PluginMenuButton(
+        link='plugins:netbox_inventory:department_add',
+        title='Add',
+        icon_class='mdi mdi-plus-thick',
+    ),
+    PluginMenuButton(
+        link='plugins:netbox_inventory:department_bulk_import',
+        title='Import',
+        icon_class='mdi mdi-upload',
+    )
+]
+invoice_buttons = [
+    PluginMenuButton(
+        link='plugins:netbox_inventory:invoice_add',
+        title='Add',
+        icon_class='mdi mdi-plus-thick',
+    ),
+    PluginMenuButton(
+        link='plugins:netbox_inventory:invoice_bulk_import',
+        title='Import',
+        icon_class='mdi mdi-upload',
+    )
+]
+
+invoice_items = (
+    PluginMenuItem(
+        link='plugins:netbox_inventory:invoice_list',
+        link_text='Invoices',
+        buttons=invoice_buttons
+    ),
+    PluginMenuItem(
+        link='plugins:netbox_inventory:account_list',
+        link_text='Accounts',
+        buttons=account_buttons
+    ),
+    PluginMenuItem(
+        link='plugins:netbox_inventory:department_list',
+        link_text='Departments',
+        buttons=department_buttons
+    )
+)
+
+
 
 #
 # Menu
@@ -154,6 +214,7 @@ if get_plugin_config('netbox_inventory', 'top_level_menu'):
         groups=(
             ('Asset Management', assets_items),
             ('Deliveries', deliveries_items),
+            ('Invoices', invoice_items),
         ),
         icon_class='mdi mdi-clipboard-text-multiple-outline'
     )

@@ -1,5 +1,6 @@
 from django.db import models
 from django.urls import reverse
+from django.apps import apps
 
 from netbox.models import NetBoxModel
 from netbox.models.features import ContactsMixin
@@ -74,6 +75,13 @@ class Purchase(NetBoxModel):
     comments = models.TextField(
         blank=True
     )
+    invoice = models.OneToOneField(
+        'Invoice',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='related_purchase'
+    )
 
     clone_fields = [
         'supplier', 'date', 'status', 'description', 'comments'
@@ -84,6 +92,21 @@ class Purchase(NetBoxModel):
         unique_together = (
             ('supplier', 'name'),
         )
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        Invoice = apps.get_model('netbox_inventory', 'Invoice')
+
+        if self.invoice:
+            if self.invoice.purchase != self:
+                self.invoice.purchase = self
+                self.incoice.save()
+        else:
+            existing_invoice = Invoice.objects.filter(purchase=self).first()
+            if existing_invoice:
+                existing_invoice.purchase = None
+                existing_invoice.save()
 
     def get_status_color(self):
         return PurchaseStatusChoices.colors.get(self.status)

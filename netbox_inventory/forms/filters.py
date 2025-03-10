@@ -8,8 +8,8 @@ from utilities.forms.rendering import FieldSet
 from utilities.forms.widgets import DatePicker
 from tenancy.forms import ContactModelFilterForm
 from tenancy.models import Contact, ContactGroup, Tenant
-from ..choices import HardwareKindChoices, AssetStatusChoices, PurchaseStatusChoices
-from ..models import Asset, Delivery, InventoryItemType, InventoryItemGroup, Purchase, Supplier
+from ..choices import HardwareKindChoices, AssetStatusChoices, PurchaseStatusChoices, CurrencyChoices
+from ..models import Asset, Delivery, InventoryItemType, InventoryItemGroup, Purchase, Supplier, Account, Invoice, Department
 
 
 __all__ = (
@@ -19,6 +19,9 @@ __all__ = (
     'DeliveryFilterForm',
     'InventoryItemTypeFilterForm',
     'InventoryItemGroupFilterForm',
+    'InvoiceFilterForm',
+    'AccountFilterForm',
+    'DepartmentFilterForm',
 )
 
 
@@ -410,3 +413,29 @@ class InventoryItemGroupFilterForm(NetBoxModelFilterSetForm):
         label='Parent group'
     )
     tag = TagFilterField(model)
+
+class InvoiceFilterForm(NetBoxModelFilterSetForm):
+    model = Invoice
+    tag = TagFilterField(model)
+    department = DynamicModelMultipleChoiceField(
+        queryset=Department.objects.all(),
+        required=False,
+        label='Department'
+    )
+    account = DynamicModelMultipleChoiceField(
+        queryset=Account.objects.all(),
+        required=False,
+        label='Account'
+    )
+    currency = forms.MultipleChoiceField(
+        choices=CurrencyChoices,
+        required=False,
+        label='Currency'
+    )
+
+
+class AccountFilterForm(NetBoxModelFilterSetForm):
+    model = Account
+
+class DepartmentFilterForm(NetBoxModelFilterSetForm):
+    model = Department

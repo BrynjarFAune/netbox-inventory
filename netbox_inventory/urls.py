@@ -1,7 +1,9 @@
 from django.urls import include, path
 
 from utilities.urls import get_model_urls
+from netbox.views.generic import ObjectChangeLogView
 from . import views
+from .models.invoices import *
 
 
 urlpatterns = (
@@ -37,4 +39,16 @@ urlpatterns = (
     # Deliveries
     path('deliveries/', include(get_model_urls('netbox_inventory', 'delivery', detail=False))),
     path('deliveries/<int:pk>/', include(get_model_urls('netbox_inventory', 'delivery'))),
+
+    # Invoices
+    path('invoices/', include(get_model_urls('netbox_inventory', 'invoice', detail=False))),
+    path('invoices/<int:pk>/', include(get_model_urls('netbox_inventory', 'invoice'))),
+
+    # Accounts
+    path('accounts/', include(get_model_urls('netbox_inventory', 'account', detail=False))),
+    path('accounts/<int:pk>/', include(get_model_urls('netbox_inventory', 'account'))),
+
+    # Departments
+    path('departments/', include(get_model_urls('netbox_inventory', 'department', detail=False))),
+    path('departments/<int:pk>/', include(get_model_urls('netbox_inventory', 'department'))),
 )

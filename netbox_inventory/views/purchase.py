@@ -22,6 +22,7 @@ class PurchaseView(generic.ObjectView):
         return {
             'asset_count': models.Asset.objects.filter(purchase=instance).count(),
             'delivery_count': models.Delivery.objects.filter(purchase=instance).count(),
+            'invoice': getattr(instance, 'invoice', None),
         }
 
 

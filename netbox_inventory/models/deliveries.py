@@ -101,7 +101,7 @@ class Purchase(NetBoxModel):
         if self.invoice:
             if self.invoice.purchase != self:
                 self.invoice.purchase = self
-                self.incoice.save()
+                self.invoice.save()
         else:
             existing_invoice = Invoice.objects.filter(purchase=self).first()
             if existing_invoice:
